@@ -1,0 +1,23 @@
+# Cloudflare Tunnel Configuration Example
+# Copy this to ~/.cloudflared/config.yml and update with your values
+
+# Your tunnel ID (from `cloudflared tunnel create`)
+tunnel: YOUR_TUNNEL_ID_HERE
+
+# Path to your tunnel credentials
+credentials-file: /Users/YOUR_USERNAME/.cloudflared/YOUR_TUNNEL_ID.json
+
+# Ingress rules
+ingress:
+  # Main terminal app
+  - hostname: terminal.yourdomain.com
+    service: http://localhost:3456
+
+  # Catch-all (required)
+  - service: http_status:404
+
+# Optional: Enable QUIC for better performance
+# protocol: quic
+
+# Optional: Disable chunked encoding (helps with some streaming issues)
+# noChunkedEncoding: true

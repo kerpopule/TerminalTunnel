@@ -1,0 +1,38 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Logs
+*.log
+npm-debug.log*
+
+# Editor
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# PWA generated
+dev-dist/
+
+# TypeScript
+*.tsbuildinfo
+
+# Gumroad marketing assets
+gumroad-*.png
+gumroad-*.svg
+
+# Tauri build artifacts
+src-tauri/target/
