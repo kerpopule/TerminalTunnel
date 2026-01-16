@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/icon.svg" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/icon-32.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <!-- Google Fonts: Terminal-friendly monospace fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=JetBrains+Mono:wght@400;600&family=Source+Code+Pro:wght@400;600&family=Ubuntu+Mono:wght@400;700&family=Inconsolata:wght@400;600&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <!-- Theme color meta tags for mobile browser chrome - always black for consistent appearance -->
+    <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#000000" media="(prefers-color-scheme: light)" />
+    <title>Terminal Tunnel</title>
+    <!-- Pre-hydration script: Apply saved theme immediately to prevent flash -->
+    <script>
+      (function() {
+        try {
+          var themes = {
+            midnight: { bg: '#1a1a2e', bg2: '#16213e', bg3: '#0f0f1a', text: '#e4e4e7', muted: '#71717a', accent: '#4f46e5', border: 'rgba(255,255,255,0.1)', error: '#ef4444', success: '#22c55e', warning: '#f59e0b' },
+            dracula: { bg: '#282a36', bg2: '#21222c', bg3: '#191a21', text: '#f8f8f2', muted: '#6272a4', accent: '#bd93f9', border: 'rgba(255,255,255,0.1)', error: '#ff5555', success: '#50fa7b', warning: '#ffb86c' },
+            nord: { bg: '#2e3440', bg2: '#3b4252', bg3: '#2e3440', text: '#eceff4', muted: '#4c566a', accent: '#88c0d0', border: 'rgba(255,255,255,0.08)', error: '#bf616a', success: '#a3be8c', warning: '#ebcb8b' },
+            monokai: { bg: '#272822', bg2: '#1e1f1c', bg3: '#1a1a17', text: '#f8f8f2', muted: '#75715e', accent: '#a6e22e', border: 'rgba(255,255,255,0.1)', error: '#f92672', success: '#a6e22e', warning: '#fd971f' },
+            tokyoNight: { bg: '#1a1b26', bg2: '#16161e', bg3: '#13131a', text: '#c0caf5', muted: '#565f89', accent: '#7aa2f7', border: 'rgba(255,255,255,0.08)', error: '#f7768e', success: '#9ece6a', warning: '#e0af68' },
+            ropic: { bg: '#1c1917', bg2: '#262220', bg3: '#161412', text: '#e8e0d4', muted: '#78716c', accent: '#c2703a', border: 'rgba(232,224,212,0.1)', error: '#e57373', success: '#5fa77d', warning: '#d4a54a' }
+          };
+          var settings = JSON.parse(localStorage.getItem('mobile_terminal_settings') || '{}');
+          var themeName = settings.themeName || 'midnight';
+          var t = themes[themeName] || themes.midnight;
+          var root = document.documentElement;
+          root.style.setProperty('--bg-primary', t.bg);
+          root.style.setProperty('--bg-secondary', t.bg2);
+          root.style.setProperty('--bg-tertiary', t.bg3);
+          root.style.setProperty('--text-primary', t.text);
+          root.style.setProperty('--text-muted', t.muted);
+          root.style.setProperty('--accent', t.accent);
+          root.style.setProperty('--border', t.border);
+          root.style.setProperty('--error', t.error);
+          root.style.setProperty('--success', t.success);
+          root.style.setProperty('--warning', t.warning);
+          // Note: theme-color meta tags are intentionally kept black for consistent browser chrome
+          // Set background color on html and body immediately
+          root.style.backgroundColor = t.bg;
+          document.body && (document.body.style.backgroundColor = t.bg);
+        } catch(e) {}
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

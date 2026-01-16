@@ -1,0 +1,85 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <!-- Claude signature coral gradient -->
+    <linearGradient id="claudeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#E8967D"/>
+      <stop offset="50%" style="stop-color:#D97757"/>
+      <stop offset="100%" style="stop-color:#C4634A"/>
+    </linearGradient>
+
+    <!-- Dark terminal gradient -->
+    <linearGradient id="termGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#1A1915"/>
+      <stop offset="100%" style="stop-color:#0D0D0C"/>
+    </linearGradient>
+
+    <!-- Glow for connection -->
+    <filter id="connGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="4" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Main background with Claude gradient -->
+  <rect width="512" height="512" rx="108" fill="url(#claudeGrad)"/>
+
+  <!-- Subtle highlight on top edge -->
+  <rect x="0" y="0" width="512" height="200" rx="108" fill="white" opacity="0.1"/>
+
+  <!-- Terminal window -->
+  <rect x="48" y="64" width="416" height="320" rx="28" fill="url(#termGrad)"/>
+
+  <!-- Terminal inner glow border -->
+  <rect x="48" y="64" width="416" height="320" rx="28" fill="none" stroke="white" stroke-opacity="0.08" stroke-width="1.5"/>
+
+  <!-- Terminal header bar -->
+  <rect x="48" y="64" width="416" height="48" rx="28" fill="white" fill-opacity="0.04"/>
+  <rect x="48" y="92" width="416" height="20" fill="white" fill-opacity="0.04"/>
+
+  <!-- Window controls -->
+  <circle cx="84" cy="88" r="9" fill="#FF5F57"/>
+  <circle cx="116" cy="88" r="9" fill="#FEBC2E"/>
+  <circle cx="148" cy="88" r="9" fill="#28C840"/>
+
+  <!-- Terminal prompt chevron - bold and prominent -->
+  <text x="88" y="196" font-family="SF Mono, Menlo, Monaco, monospace" font-size="72" font-weight="800" fill="#D97757">></text>
+
+  <!-- Blinking cursor -->
+  <rect x="168" y="148" width="20" height="56" rx="4" fill="white" opacity="0.9">
+    <animate attributeName="opacity" values="0.9;0.2;0.9" dur="1.2s" repeatCount="indefinite"/>
+  </rect>
+
+  <!-- Code output lines (simplified) -->
+  <rect x="88" y="240" width="200" height="14" rx="7" fill="white" opacity="0.25"/>
+  <rect x="88" y="268" width="280" height="14" rx="7" fill="white" opacity="0.15"/>
+  <rect x="88" y="296" width="160" height="14" rx="7" fill="white" opacity="0.10"/>
+
+  <!-- Second prompt -->
+  <text x="88" y="362" font-family="SF Mono, Menlo, Monaco, monospace" font-size="48" font-weight="800" fill="#D97757">></text>
+
+  <!-- SSH Connection indicator - bottom right -->
+  <g transform="translate(316, 408)">
+    <!-- Glowing connection circle -->
+    <circle cx="24" cy="24" r="24" fill="#4ADE80" opacity="0.15" filter="url(#connGlow)"/>
+    <circle cx="24" cy="24" r="18" fill="#4ADE80" opacity="0.2"/>
+    <circle cx="24" cy="24" r="12" fill="#4ADE80">
+      <animate attributeName="r" values="12;15;12" dur="2s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="1;0.6;1" dur="2s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="24" cy="24" r="8" fill="#4ADE80"/>
+
+    <!-- SSH text -->
+    <text x="68" y="32" font-family="SF Mono, Menlo, Monaco, monospace" font-size="24" font-weight="700" fill="white" opacity="0.9">SSH</text>
+  </g>
+
+  <!-- Remote connection waves - bottom left -->
+  <g transform="translate(56, 416)">
+    <path d="M0 20 Q20 4 40 20" stroke="white" stroke-width="4" fill="none" stroke-linecap="round" opacity="0.2"/>
+    <path d="M8 20 Q20 10 32 20" stroke="white" stroke-width="4" fill="none" stroke-linecap="round" opacity="0.35"/>
+    <path d="M14 20 Q20 14 26 20" stroke="white" stroke-width="4" fill="none" stroke-linecap="round" opacity="0.5"/>
+    <circle cx="20" cy="24" r="6" fill="white" opacity="0.7"/>
+  </g>
+</svg>

@@ -1,0 +1,4666 @@
+:root {
+  /* Default to ropic theme - matches defaultTheme in themes/index.ts */
+  --bg-primary: #1c1917;
+  --bg-secondary: #262220;
+  --bg-tertiary: #161412;
+  --text-primary: #e8e0d4;
+  --text-secondary: #a8a29e;
+  --text-muted: #78716c;
+  --accent: #c2703a;
+  --accent-hover: #d4824a;
+  --accent-10: rgba(194, 112, 58, 0.1);
+  --accent-15: rgba(194, 112, 58, 0.15);
+  --accent-20: rgba(194, 112, 58, 0.2);
+  --accent-30: rgba(194, 112, 58, 0.3);
+  --success: #5fa77d;
+  --error: #e57373;
+  --warning: #d4a54a;
+  --border: rgba(232, 224, 212, 0.1);
+  --border-hover: rgba(232, 224, 212, 0.2);
+
+  /* Safe area insets for notched devices */
+  --sat: env(safe-area-inset-top);
+  --sar: env(safe-area-inset-right);
+  --sab: env(safe-area-inset-bottom);
+  --sal: env(safe-area-inset-left);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  /* Use bg-primary for mobile Safari browser chrome matching */
+  background: var(--bg-primary);
+  /* Ensure background extends to absolute bottom on iOS */
+  min-height: 100vh;
+  min-height: -webkit-fill-available;
+}
+
+body {
+  height: 100%;
+  height: 100dvh;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, sans-serif;
+  /* Use bg-primary for mobile Safari browser chrome matching */
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior: none;
+}
+
+#root {
+  height: 100%;
+  height: 100dvh;
+  width: 100%;
+  overflow: hidden;
+}
+
+/* App container - fixed to fill entire screen */
+.app {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-tertiary);
+  padding-top: env(safe-area-inset-top, 0);
+  /* NO bottom padding - extend fully to bottom edge */
+}
+
+/* Desktop app: Add padding for macOS traffic lights with overlay title bar */
+.app.desktop-app {
+  padding-top: 32px; /* Space for macOS traffic lights */
+}
+
+/* Desktop title bar drag region - allows window dragging from top area */
+.desktop-drag-region {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 32px;
+  -webkit-app-region: drag;
+  app-region: drag;
+  z-index: 10000;
+  background: var(--bg-primary);
+  /* Leave space for macOS traffic lights (close/minimize/maximize buttons) */
+  padding-left: 80px;
+  /* Ensure drag region receives pointer events */
+  pointer-events: auto;
+}
+
+/* Main content area */
+.main-content {
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Tab panels - Terminal is always mounted, others conditionally rendered */
+.tab-panel {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  visibility: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.tab-panel.active {
+  visibility: visible;
+  pointer-events: auto;
+  z-index: 2;
+}
+
+/* Tab content */
+.tab-content {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Tab bar at bottom */
+.tab-bar {
+  display: flex;
+  background: var(--bg-tertiary);
+  border-top: 1px solid var(--border);
+  flex-shrink: 0;
+  padding-bottom: env(safe-area-inset-bottom, 0);
+}
+
+.tab-bar-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 0;
+  color: var(--text-muted);
+  text-decoration: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: color 0.2s;
+  font-size: 11px;
+  gap: 5px;
+}
+
+.tab-bar-item.active {
+  color: var(--accent);
+}
+
+.tab-bar-item:active {
+  opacity: 0.7;
+}
+
+.tab-bar-icon {
+  font-size: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tab-bar-svg {
+  width: 24px;
+  height: 24px;
+}
+
+/* Terminal specific */
+.terminal-container {
+  flex: 1;
+  overflow: hidden;
+  background: var(--bg-tertiary);
+  position: relative;
+}
+
+.terminal-container .xterm {
+  height: 100%;
+  padding: 8px;
+}
+
+.terminal-container .xterm-viewport {
+  background: transparent !important;
+}
+
+/* Terminal links - ensure custom handler works on mobile */
+.terminal-container .xterm a,
+.terminal-container .xterm-link {
+  cursor: pointer;
+  text-decoration: underline;
+  /* Prevent iOS from auto-detecting and handling links */
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* Scroll to bottom button - appears when user scrolls up in terminal */
+.scroll-to-bottom-btn {
+  position: absolute;
+  bottom: 16px;
+  right: 16px;
+  z-index: 10;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 0;
+  opacity: 0.9;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  animation: scroll-btn-appear 0.2s ease;
+}
+
+.scroll-to-bottom-btn:hover {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: white;
+  opacity: 1;
+  transform: scale(1.05);
+}
+
+.scroll-to-bottom-btn:active {
+  transform: scale(0.95);
+}
+
+@keyframes scroll-btn-appear {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 0.9;
+    transform: translateY(0);
+  }
+}
+
+/* Adjust scroll button position when keyboard is visible */
+.terminal-instance.keyboard-active .scroll-to-bottom-btn {
+  bottom: 60px;
+}
+
+/* Smaller button in split mode */
+.split-container.split-enabled .scroll-to-bottom-btn {
+  width: 32px;
+  height: 32px;
+  bottom: 12px;
+  right: 12px;
+}
+
+/* Mobile keybar */
+.mobile-keybar {
+  display: flex;
+  background: var(--bg-secondary);
+  border-top: 1px solid var(--border);
+  padding: 6px 4px;
+  gap: 4px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.keybar-btn {
+  flex-shrink: 0;
+  min-width: 44px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 14px;
+  font-family: 'SF Mono', 'Menlo', 'Monaco', monospace;
+  cursor: pointer;
+  transition: all 0.1s;
+  padding: 0 10px;
+}
+
+.keybar-btn:active {
+  background: var(--accent);
+  border-color: var(--accent);
+  transform: scale(0.95);
+}
+
+.keybar-btn.modifier {
+  background: var(--accent-20);
+  border-color: var(--accent);
+}
+
+.keybar-btn.modifier.active {
+  background: var(--accent);
+}
+
+.keybar-spacer {
+  flex: 1;
+  min-width: 8px;
+}
+
+/* Cancel button with icon */
+.keybar-btn-cancel {
+  gap: 4px;
+}
+
+.keybar-cancel-icon {
+  font-size: 11px;
+  opacity: 0.7;
+}
+
+/* Hidden input for keyboard capture */
+.hidden-input {
+  position: absolute;
+  top: -100px;
+  left: 0;
+  width: 100%;
+  height: 50px;
+  opacity: 0;
+  font-size: 16px; /* Prevents iOS zoom on focus */
+}
+
+/* File browser */
+.file-browser {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: var(--bg-primary);
+}
+
+/* Prevent text selection on long press for interactive elements */
+.file-browser .file-item,
+.file-browser .shortcut-btn,
+.file-browser .file-path,
+.file-browser .context-menu,
+.file-browser .context-menu-item,
+.file-browser .file-icon,
+.file-browser .folder-icon-svg,
+.file-browser .shortcuts-bar,
+.file-browser .file-info,
+.file-browser .file-name,
+.file-browser .file-browser-action-btn,
+.file-browser .file-action-btn {
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  user-select: none;
+}
+
+.file-header {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  padding-right: 44px; /* Room for collapse button */
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border);
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.file-path {
+  flex: 1;
+  font-size: 17px;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.file-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.file-action-btn {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text-primary);
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.file-action-btn:active {
+  background: var(--accent);
+}
+
+.file-action-icon {
+  width: 18px;
+  height: 18px;
+}
+
+.shortcuts-bar {
+  display: flex;
+  padding: 8px 12px;
+  gap: 8px;
+  overflow-x: auto;
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+  min-height: 44px; /* Ensure minimum height even when empty */
+}
+
+.shortcut-btn {
+  flex-shrink: 0;
+  padding: 6px 14px;
+  background: var(--accent-15);
+  border: 1px solid var(--accent);
+  border-radius: 16px;
+  color: var(--text-primary);
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.shortcut-btn:active {
+  background: var(--accent);
+  color: var(--text-primary);
+}
+
+.add-favorite-btn {
+  padding: 6px 12px;
+  font-size: 16px;
+  font-weight: 500;
+  opacity: 0.7;
+}
+
+.add-favorite-btn:hover,
+.add-favorite-btn:active {
+  opacity: 1;
+}
+
+.file-list {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+
+.file-item {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+  gap: 12px;
+  cursor: pointer;
+  transition: background 0.1s;
+}
+
+.file-item:active {
+  background: var(--accent-10);
+}
+
+.file-icon {
+  font-size: 24px;
+  width: 32px;
+  text-align: center;
+}
+
+.file-icon-folder {
+  color: var(--accent);
+}
+
+.folder-icon-svg {
+  width: 24px;
+  height: 24px;
+}
+
+.file-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.file-name {
+  font-size: 16px;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.file-meta {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.file-chevron {
+  color: var(--text-muted);
+  font-size: 18px;
+}
+
+/* Parent directory (..) entry styling */
+.file-item-parent {
+  background: var(--bg-secondary);
+  border-bottom: 2px solid var(--border);
+}
+
+.file-item-parent:active {
+  background: var(--accent-15);
+}
+
+.file-item-parent .file-name {
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.file-item-parent .file-meta {
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.file-icon-back {
+  color: var(--text-secondary);
+}
+
+.file-icon-back svg {
+  width: 20px;
+  height: 20px;
+}
+
+.file-icon-back.file-icon-large svg {
+  width: 28px;
+  height: 28px;
+}
+
+/* Preview/Memory iframe container */
+.preview-container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.preview-header {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border);
+  gap: 12px;
+}
+
+.preview-url {
+  flex: 1;
+  font-size: 14px;
+  color: var(--text-secondary);
+  font-family: 'SF Mono', 'Menlo', monospace;
+}
+
+.preview-nav-buttons {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.preview-iframe {
+  flex: 1;
+  border: none;
+  background: white;
+}
+
+/* Loading state */
+.loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  height: 100%;
+  color: var(--text-muted);
+}
+
+.loading-spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.loading-text {
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+.loading-subtext {
+  font-size: 12px;
+  color: var(--text-muted);
+  opacity: 0.7;
+  font-family: var(--font-mono);
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Error state */
+.error-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 24px;
+  text-align: center;
+  gap: 16px;
+}
+
+.error-icon {
+  font-size: 48px;
+}
+
+.error-title {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.error-message {
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+.error-retry {
+  padding: 10px 20px;
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+/* Modal */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  z-index: 100;
+}
+
+.modal {
+  background: var(--bg-secondary);
+  border-radius: 16px;
+  width: 100%;
+  max-width: 360px;
+  padding: 24px;
+  border: 1px solid var(--border);
+}
+
+.modal-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
+.modal-input {
+  width: 100%;
+  padding: 12px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text-primary);
+  font-size: 16px;
+  margin-bottom: 16px;
+}
+
+.modal-input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.modal-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.modal-btn {
+  flex: 1;
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+}
+
+.modal-btn-cancel {
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+}
+
+.modal-btn-confirm {
+  background: var(--accent);
+  color: white;
+}
+
+.modal-btn-danger {
+  background: var(--error);
+  color: white;
+}
+
+.modal-content {
+  background: var(--bg-secondary);
+  border-radius: 16px;
+  width: 100%;
+  max-width: 360px;
+  padding: 24px;
+  border: 1px solid var(--border);
+}
+
+.modal-description {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin: 0 0 20px 0;
+  line-height: 1.5;
+}
+
+.modal-btn-primary {
+  background: var(--accent);
+  color: white;
+}
+
+.modal-btn-primary:hover:not(:disabled) {
+  background: var(--accent-hover);
+}
+
+.modal-btn-secondary {
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+}
+
+.modal-btn-secondary:hover:not(:disabled) {
+  background: var(--bg-primary);
+}
+
+.modal-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.modal-message {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-bottom: 20px;
+  line-height: 1.5;
+}
+
+.modal-field {
+  margin-bottom: 16px;
+}
+
+.modal-field:last-of-type {
+  margin-bottom: 16px;
+}
+
+.modal-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  margin-bottom: 6px;
+}
+
+.modal-hint {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 6px;
+}
+
+/* Integration Cards (Settings) */
+.integration-card-settings {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 12px;
+}
+
+.integration-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.integration-card-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.integration-name {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.integration-badge {
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 500;
+}
+
+.integration-badge.installed {
+  background: rgba(95, 167, 125, 0.15);
+  color: var(--success);
+}
+
+.integration-card-desc {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin: 0 0 12px 0;
+  line-height: 1.4;
+}
+
+.integration-card-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.integration-card-note {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin: 12px 0 0 0;
+}
+
+/* GitHub Badge (theme-aware) */
+.github-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 10px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: 12px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.github-badge:hover {
+  background: var(--bg-primary);
+  border-color: var(--border-hover);
+  color: var(--text-primary);
+}
+
+.github-badge svg {
+  flex-shrink: 0;
+}
+
+/* Integration Action Buttons */
+.integration-action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 10px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.integration-action-btn:hover:not(:disabled) {
+  background: var(--bg-primary);
+  border-color: var(--border-hover);
+  color: var(--text-primary);
+}
+
+.integration-action-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.integration-action-btn.primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: white;
+}
+
+.integration-action-btn.primary:hover:not(:disabled) {
+  background: var(--accent-hover);
+  border-color: var(--accent-hover);
+}
+
+.integration-action-btn svg {
+  flex-shrink: 0;
+}
+
+/* Spinning animation for refresh icon */
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.spinning {
+  animation: spin 1s linear infinite;
+}
+
+/* Context menu */
+.context-menu {
+  position: fixed;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 8px 0;
+  min-width: 180px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  z-index: 200;
+}
+
+.context-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  color: var(--text-primary);
+  cursor: pointer;
+}
+
+.context-menu-item:active {
+  background: var(--accent-20);
+}
+
+.context-menu-item.danger {
+  color: var(--error);
+}
+
+.context-menu-icon {
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.context-menu-icon svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* File icon SVG sizing */
+.file-icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.file-icon-large svg {
+  width: 32px;
+  height: 32px;
+}
+
+.error-icon svg {
+  width: 48px;
+  height: 48px;
+}
+
+/* Plus menu (dropdown for add button) */
+.plus-menu-container {
+  position: relative;
+}
+
+.plus-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 4px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 8px 0;
+  min-width: 160px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  z-index: 200;
+}
+
+/* Upload progress overlay */
+.upload-progress-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(4px);
+}
+
+.upload-progress-container {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 24px 32px;
+  min-width: 280px;
+  text-align: center;
+}
+
+.upload-progress-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 16px;
+}
+
+.upload-progress-bar-container {
+  height: 8px;
+  background: var(--bg-tertiary);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 12px;
+}
+
+.upload-progress-bar {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 4px;
+  transition: width 0.2s ease;
+}
+
+.upload-progress-text {
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+/* PIN Lock Screen */
+.pin-lock-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  padding: 20px;
+}
+
+.pin-lock-container {
+  text-align: center;
+  padding: 40px;
+  max-width: 400px;
+  width: 100%;
+}
+
+.pin-lock-icon {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 24px;
+  color: var(--text-primary);
+  opacity: 0.9;
+}
+
+.pin-lock-icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.pin-lock-title {
+  font-size: 28px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 8px;
+}
+
+.pin-lock-subtitle {
+  font-size: 16px;
+  color: var(--text-muted);
+  margin: 0 0 32px;
+}
+
+.pin-input-group {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin-bottom: 24px;
+}
+
+.pin-input {
+  width: 48px;
+  height: 56px;
+  font-size: 24px;
+  text-align: center;
+  background: var(--bg-tertiary);
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  color: var(--text-primary);
+  outline: none;
+  transition: border-color 0.2s, background-color 0.2s;
+  -webkit-appearance: none;
+  -moz-appearance: textfield;
+}
+
+.pin-input::-webkit-outer-spin-button,
+.pin-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.pin-input:focus {
+  border-color: var(--accent);
+  background: var(--accent-10);
+}
+
+.pin-input-filled {
+  background: var(--bg-secondary);
+}
+
+.pin-input-error {
+  border-color: var(--error);
+  animation: shake 0.3s ease;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-8px); }
+  75% { transform: translateX(8px); }
+}
+
+.pin-error {
+  color: var(--error);
+  font-size: 14px;
+  margin: 0;
+}
+
+.pin-verifying {
+  color: var(--text-muted);
+  font-size: 14px;
+  margin: 0;
+}
+
+/* PIN Loading Spinner */
+.pin-loading-spinner {
+  width: 40px;
+  height: 40px;
+  margin: 24px auto 0;
+  border: 3px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: pin-spin 0.8s linear infinite;
+}
+
+@keyframes pin-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* PIN Setup Modal */
+.pin-setup-modal {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 32px;
+  width: 100%;
+  max-width: 400px;
+  position: relative;
+}
+
+.pin-setup-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 32px;
+  height: 32px;
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 24px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  transition: background-color 0.2s;
+}
+
+.pin-setup-close:hover {
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+}
+
+.pin-setup-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 8px;
+  text-align: center;
+}
+
+.pin-setup-subtitle {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin: 0 0 24px;
+  text-align: center;
+}
+
+.pin-setup-modal .pin-input-group {
+  margin-bottom: 16px;
+}
+
+.pin-setup-modal .pin-input {
+  background: var(--bg-tertiary);
+  border-color: var(--border);
+  color: var(--text-primary);
+}
+
+.pin-setup-modal .pin-input:focus {
+  border-color: var(--accent);
+  background: var(--accent-10);
+}
+
+.pin-setup-modal .pin-input-error {
+  border-color: var(--error);
+}
+
+.pin-setup-modal .pin-error {
+  color: var(--error);
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.pin-setup-actions {
+  display: flex;
+  justify-content: center;
+  margin-top: 16px;
+}
+
+/* Settings button style */
+.settings-btn {
+  padding: 12px 24px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-primary);
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s, border-color 0.2s;
+}
+
+.settings-btn:hover {
+  background: var(--accent-10);
+  border-color: var(--accent);
+}
+
+/* Status indicator */
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--success);
+}
+
+.status-dot.disconnected {
+  background: var(--error);
+}
+
+.status-dot.connecting {
+  background: var(--warning);
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+/* Memory viewer - full screen iframe */
+.memory-viewer-container {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.memory-viewer-iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+.memory-viewer-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  gap: 12px;
+  color: var(--text-secondary);
+}
+
+.memory-viewer-loading .loading-spinner {
+  width: 24px;
+  height: 24px;
+  border: 2px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.memory-viewer-loading .loading-text {
+  font-size: 13px;
+}
+
+/* Memory Install Screen - onboarding-style installation flow */
+.memory-install-screen {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: var(--bg-primary);
+}
+
+.memory-install-screen .install-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  max-width: 400px;
+  width: 100%;
+  gap: 16px;
+}
+
+.memory-install-screen h2 {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.memory-install-screen .install-subtitle {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin: 0;
+  line-height: 1.5;
+}
+
+.memory-install-screen .install-icon {
+  margin-bottom: 8px;
+  color: var(--accent);
+}
+
+.memory-install-screen .install-spinner {
+  margin-bottom: 8px;
+}
+
+.memory-install-screen .success-icon-large {
+  width: 64px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--success, #10b981);
+  color: white;
+  border-radius: 50%;
+  font-size: 32px;
+  margin-bottom: 8px;
+}
+
+/* Memory install buttons */
+.memory-install-screen .install-button {
+  border: none;
+  border-radius: 8px;
+  padding: 12px 24px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.memory-install-screen .install-button.primary {
+  background: var(--accent);
+  color: white;
+}
+
+.memory-install-screen .install-button.primary:hover:not(:disabled) {
+  background: var(--accent-hover);
+  transform: translateY(-1px);
+}
+
+.memory-install-screen .install-button.primary.large {
+  padding: 14px 32px;
+  font-size: 15px;
+  margin-top: 8px;
+}
+
+.memory-install-screen .install-button.secondary {
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+}
+
+.memory-install-screen .install-button.secondary:hover:not(:disabled) {
+  background: var(--bg-hover);
+  border-color: var(--text-secondary);
+}
+
+.memory-install-screen .install-button.ghost {
+  background: transparent;
+  color: var(--text-secondary);
+}
+
+.memory-install-screen .install-button.ghost:hover:not(:disabled) {
+  color: var(--text-primary);
+  background: var(--bg-tertiary);
+}
+
+.memory-install-screen .install-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.memory-install-screen .install-button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+/* Provider selection cards */
+.memory-install-screen .provider-options {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  margin-top: 8px;
+}
+
+.memory-install-screen .provider-card {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+}
+
+.memory-install-screen .provider-card:hover {
+  border-color: var(--text-secondary);
+  transform: translateY(-1px);
+}
+
+.memory-install-screen .provider-card.recommended {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent);
+}
+
+.memory-install-screen .provider-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.memory-install-screen .provider-name {
+  font-weight: 600;
+  font-size: 15px;
+  color: var(--text-primary);
+}
+
+.memory-install-screen .recommended-badge {
+  background: var(--accent);
+  color: white;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 4px;
+  text-transform: uppercase;
+}
+
+.memory-install-screen .free-badge {
+  background: var(--success, #10b981);
+  color: white;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 4px;
+  text-transform: uppercase;
+}
+
+.memory-install-screen .provider-description {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin: 0 0 12px 0;
+  line-height: 1.4;
+}
+
+.memory-install-screen .provider-card .install-button {
+  width: 100%;
+}
+
+/* Gemini setup instructions */
+.memory-install-screen .setup-instructions {
+  background: var(--bg-secondary);
+  border-radius: 12px;
+  padding: 16px;
+  width: 100%;
+  text-align: left;
+}
+
+.memory-install-screen .setup-instructions h3 {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 12px 0;
+}
+
+.memory-install-screen .instruction-steps {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 16px 0;
+}
+
+.memory-install-screen .instruction-steps li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 8px;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.memory-install-screen .step-number {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--accent);
+  color: white;
+  border-radius: 50%;
+  font-size: 11px;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+/* API key input */
+.memory-install-screen .api-key-input-section {
+  width: 100%;
+  text-align: left;
+  margin-top: 8px;
+}
+
+.memory-install-screen .api-key-input-section label {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  margin-bottom: 6px;
+}
+
+.memory-install-screen .api-key-input {
+  width: 100%;
+  padding: 10px 12px;
+  font-size: 14px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  box-sizing: border-box;
+}
+
+.memory-install-screen .api-key-input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(var(--accent-rgb, 99, 102, 241), 0.2);
+}
+
+.memory-install-screen .input-error {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+  color: var(--error, #ef4444);
+  font-size: 13px;
+}
+
+.memory-install-screen .input-error .error-icon {
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--error, #ef4444);
+  color: white;
+  border-radius: 50%;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+/* Button row */
+.memory-install-screen .button-row {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+  margin-top: 16px;
+}
+
+.memory-install-screen .button-row .install-button {
+  flex: 1;
+}
+
+/* GitHub badge in memory screen */
+.memory-install-screen .memory-github {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+}
+
+.memory-install-screen .memory-github:hover {
+  border-color: var(--text-secondary);
+  color: var(--text-primary);
+}
+
+/* Memory Search Button - floating search for memory viewer */
+.memory-search-btn {
+  position: absolute;
+  bottom: 16px;
+  right: 16px;
+  z-index: 10;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  opacity: 0.9;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  animation: memory-search-btn-appear 0.2s ease;
+}
+
+.memory-search-btn:hover {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: white;
+  opacity: 1;
+  transform: scale(1.05);
+}
+
+.memory-search-btn:active {
+  transform: scale(0.95);
+}
+
+.memory-search-btn svg {
+  width: 20px;
+  height: 20px;
+}
+
+@keyframes memory-search-btn-appear {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 0.9;
+    transform: translateY(0);
+  }
+}
+
+/* Memory Search Overlay */
+.memory-search-overlay {
+  position: absolute;
+  bottom: 70px;
+  right: 16px;
+  z-index: 11;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+  animation: memory-search-overlay-appear 0.15s ease;
+}
+
+/* When keyboard is visible, overlay is fixed positioned above keyboard */
+.memory-search-overlay.keyboard-visible {
+  z-index: 1001;
+  box-shadow: 0 -2px 16px rgba(0, 0, 0, 0.4);
+}
+
+/* Hidden inputs for iOS keyboard up/down arrow navigation */
+/* These must be focusable for iOS keyboard nav but visually hidden */
+.ios-nav-field {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+
+@keyframes memory-search-overlay-appear {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.memory-search-input {
+  width: 180px;
+  padding: 8px 12px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text-primary);
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.memory-search-input:focus {
+  border-color: var(--accent);
+}
+
+.memory-search-input::placeholder {
+  color: var(--text-muted);
+}
+
+.memory-search-nav {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.memory-search-nav-btn {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.memory-search-nav-btn:hover:not(:disabled) {
+  background: var(--accent-20);
+  border-color: var(--accent);
+  color: var(--text-primary);
+}
+
+.memory-search-nav-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.memory-search-nav-btn svg {
+  width: 14px;
+  height: 14px;
+}
+
+.memory-search-count {
+  font-size: 12px;
+  color: var(--text-muted);
+  min-width: 45px;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.memory-search-close {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  border-radius: 4px;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  margin-left: 4px;
+}
+
+.memory-search-close:hover {
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+}
+
+.memory-search-close svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* Memory search highlight in iframe */
+.memory-search-highlight {
+  background-color: rgba(255, 235, 59, 0.4) !important;
+  color: inherit !important;
+}
+
+.memory-search-highlight.current {
+  background-color: rgba(255, 152, 0, 0.6) !important;
+}
+
+/* Icon view for file browser */
+.file-list-icons {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-auto-rows: min-content;
+  gap: 10px;
+  padding: 12px;
+  align-content: start;
+}
+
+.file-item-icon {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 10px 6px;
+  border-bottom: none;
+  border-radius: 12px;
+  background: var(--bg-secondary);
+  border: 2px solid var(--border);
+  min-height: auto;
+  overflow: hidden;
+  min-width: 0;
+  transition: all 0.2s;
+}
+
+.file-item-icon:active {
+  background: var(--accent-15);
+  border-color: var(--accent);
+  transform: scale(0.97);
+}
+
+.file-item-icon .file-icon-large {
+  font-size: 48px;
+  width: 64px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 6px;
+  flex-shrink: 0;
+}
+
+.file-item-icon .file-icon-large .folder-icon-svg {
+  width: 48px;
+  height: 48px;
+}
+
+.file-item-icon .file-info {
+  width: 100%;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.file-item-icon .file-name {
+  font-size: 13px;
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-word;
+  max-width: 100%;
+}
+
+/* Image thumbnail in icon view */
+.file-thumbnail {
+  width: 64px;
+  height: 64px;
+  object-fit: cover;
+  border-radius: 6px;
+  margin-bottom: 6px;
+  flex-shrink: 0;
+}
+
+/* File preview modal */
+.file-preview-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.95);
+  z-index: 300;
+  display: flex;
+  flex-direction: column;
+}
+
+.file-preview-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  padding-top: calc(12px + var(--sat));
+  background: var(--bg-tertiary);
+  border-bottom: 1px solid var(--border);
+}
+
+.file-preview-title {
+  flex: 1;
+  font-size: 14px;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-right: 12px;
+}
+
+.file-preview-actions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.file-preview-btn {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  color: var(--text-primary);
+  font-size: 18px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.file-preview-btn:active {
+  background: var(--accent);
+}
+
+.file-preview-icon {
+  width: 18px;
+  height: 18px;
+}
+
+.file-preview-content {
+  flex: 1;
+  overflow: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.file-preview-image {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  border-radius: 8px;
+}
+
+.file-preview-text {
+  width: 100%;
+  height: 100%;
+  background: var(--bg-secondary);
+  border-radius: 8px;
+  padding: 16px;
+  overflow: auto;
+  font-family: 'SF Mono', 'Menlo', 'Monaco', monospace;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--text-primary);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.file-preview-pdf {
+  width: 100%;
+  height: 100%;
+  border: none;
+  border-radius: 8px;
+  background: white;
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* Terminal context menu */
+.terminal-context-menu {
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.context-menu-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 6px 0;
+}
+
+.command-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.command-item span {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.remove-command-btn {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 4px 8px;
+  margin-left: 8px;
+  font-size: 12px;
+}
+
+.remove-command-btn:hover {
+  color: var(--error);
+}
+
+.add-command {
+  color: var(--accent);
+}
+
+/* Settings Screen */
+.settings-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: var(--bg-primary);
+}
+
+.settings-header {
+  padding: 16px 20px;
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border);
+}
+
+.settings-title {
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.settings-content {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 0 0 24px;
+}
+
+.settings-section {
+  padding: 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.settings-section:last-child {
+  border-bottom: none;
+}
+
+.settings-section-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 0 0 16px;
+}
+
+.settings-group {
+  margin-bottom: 20px;
+}
+
+.settings-group:last-child {
+  margin-bottom: 0;
+}
+
+.settings-label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 15px;
+  color: var(--text-primary);
+  margin-bottom: 12px;
+}
+
+.settings-value {
+  color: var(--accent);
+  font-weight: 500;
+}
+
+/* Theme Grid */
+.theme-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.theme-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 12px;
+  background: var(--bg-secondary);
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+}
+
+.theme-card:active {
+  transform: scale(0.97);
+}
+
+.theme-card.active {
+  border-color: var(--accent);
+  background: var(--accent-10);
+}
+
+.theme-preview {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 8px;
+}
+
+.theme-preview-bg,
+.theme-preview-accent,
+.theme-preview-fg {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+}
+
+.theme-preview-bg {
+  background: var(--theme-bg);
+}
+
+.theme-preview-accent {
+  background: var(--theme-accent);
+}
+
+.theme-preview-fg {
+  background: var(--theme-fg);
+}
+
+.theme-name {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.theme-check {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  font-size: 12px;
+  color: var(--accent);
+}
+
+/* Font Grid */
+.font-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.font-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 12px 8px;
+  background: var(--bg-secondary);
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+}
+
+.font-card:active {
+  transform: scale(0.97);
+}
+
+.font-card.active {
+  border-color: var(--accent);
+  background: var(--accent-10);
+}
+
+.font-sample {
+  font-size: 24px;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+  line-height: 1;
+}
+
+.font-name {
+  font-size: 10px;
+  color: var(--text-secondary);
+  text-align: center;
+  line-height: 1.2;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.font-check {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  font-size: 10px;
+  color: var(--accent);
+}
+
+/* Dropdown */
+.dropdown-container {
+  position: relative;
+}
+
+.dropdown-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 12px 16px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--text-primary);
+  font-size: 15px;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.dropdown-trigger:active {
+  border-color: var(--accent);
+}
+
+.dropdown-value {
+  flex: 1;
+}
+
+.dropdown-arrow {
+  font-size: 10px;
+  color: var(--text-muted);
+  transition: transform 0.2s;
+}
+
+.dropdown-arrow.open {
+  transform: rotate(180deg);
+}
+
+.dropdown-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 99;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  z-index: 100;
+  max-height: 280px;
+  overflow-y: auto;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 12px 16px;
+  background: none;
+  border: none;
+  color: var(--text-primary);
+  font-size: 15px;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.1s;
+}
+
+.dropdown-item:active,
+.dropdown-item.active {
+  background: var(--accent-15);
+}
+
+.dropdown-check {
+  color: var(--accent);
+  font-size: 14px;
+}
+
+/* Slider */
+.slider-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.slider-label {
+  font-size: 12px;
+  color: var(--text-muted);
+  min-width: 24px;
+  text-align: center;
+}
+
+.slider {
+  flex: 1;
+  -webkit-appearance: none;
+  appearance: none;
+  height: 6px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  outline: none;
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 22px;
+  height: 22px;
+  background: var(--accent);
+  border-radius: 50%;
+  cursor: pointer;
+  border: 3px solid var(--bg-primary);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.slider::-moz-range-thumb {
+  width: 22px;
+  height: 22px;
+  background: var(--accent);
+  border-radius: 50%;
+  cursor: pointer;
+  border: 3px solid var(--bg-primary);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* Toggle Button */
+.toggle-btn {
+  position: relative;
+  width: 52px;
+  height: 32px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  cursor: pointer;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+
+.toggle-btn.active {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.toggle-slider {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 24px;
+  height: 24px;
+  background: var(--text-primary);
+  border-radius: 50%;
+  transition: transform 0.2s;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.toggle-btn.active .toggle-slider {
+  transform: translateX(20px);
+}
+
+/* Settings hint text */
+.settings-hint {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-weight: 400;
+  display: block;
+  margin-top: 2px;
+}
+
+/* Settings info text */
+.settings-info {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.settings-link {
+  color: var(--accent);
+  text-decoration: none;
+  transition: opacity 0.15s ease;
+}
+
+.settings-link:hover {
+  opacity: 0.8;
+  text-decoration: underline;
+}
+
+/* Terminal Preview */
+.terminal-preview {
+  padding: 16px;
+  border-radius: 10px;
+  line-height: 1.4;
+  overflow-x: auto;
+}
+
+.terminal-preview div {
+  white-space: nowrap;
+}
+
+/* File Browser Bottom Action Buttons */
+.file-browser-actions {
+  display: flex;
+  gap: 8px;
+  padding: 12px 16px;
+  background: var(--bg-secondary);
+  border-top: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.file-browser-action-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px 16px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--text-primary);
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.file-browser-action-btn:active {
+  background: var(--accent);
+  border-color: var(--accent);
+  transform: scale(0.98);
+}
+
+.file-browser-action-btn.claude-code-btn {
+  background: var(--accent-15);
+  border-color: var(--accent);
+}
+
+.file-browser-action-btn.claude-code-btn:active {
+  background: var(--accent);
+}
+
+/* ============================================
+   SPLIT TERMINAL STYLES
+   ============================================ */
+
+/* Split container - holds one or two terminal panes */
+.split-container {
+  display: flex;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  background: var(--bg-tertiary);
+}
+
+/* Vertical split (mobile - top/bottom) */
+.split-container.vertical {
+  flex-direction: column;
+}
+
+/* Horizontal split (desktop - left/right) */
+.split-container.horizontal {
+  flex-direction: row;
+}
+
+/* Split divider between panes - draggable */
+.split-divider {
+  flex-shrink: 0;
+  background: var(--border);
+  position: relative;
+  touch-action: none;
+  user-select: none;
+  transition: background 0.15s;
+}
+
+.split-container.vertical .split-divider {
+  height: 8px;
+  width: 100%;
+  cursor: row-resize;
+}
+
+.split-container.horizontal .split-divider {
+  width: 8px;
+  height: 100%;
+  cursor: col-resize;
+}
+
+.split-divider:hover,
+.split-divider.dragging {
+  background: var(--accent);
+}
+
+/* Visual indicator on divider */
+.split-divider::after {
+  content: '';
+  position: absolute;
+  background: var(--text-muted);
+  border-radius: 2px;
+  transition: background 0.15s;
+}
+
+.split-divider:hover::after,
+.split-divider.dragging::after {
+  background: var(--text-primary);
+}
+
+.split-container.vertical .split-divider::after {
+  width: 40px;
+  height: 3px;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.split-container.horizontal .split-divider::after {
+  width: 3px;
+  height: 40px;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+/* Prevent text selection while resizing */
+.split-container.is-resizing {
+  user-select: none;
+}
+
+.split-container.is-resizing * {
+  pointer-events: none;
+}
+
+.split-container.is-resizing .split-divider {
+  pointer-events: auto;
+}
+
+/* Terminal pane - one side of the split */
+.terminal-pane {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  min-width: 0;
+  overflow: hidden;
+}
+
+/* Terminal pane empty state - shown when no tabs exist */
+.terminal-pane-empty {
+  justify-content: center;
+  align-items: center;
+  background: var(--bg-primary);
+}
+
+.terminal-pane-empty-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 32px;
+  text-align: center;
+}
+
+.terminal-pane-empty-icon {
+  color: var(--text-tertiary);
+  opacity: 0.5;
+}
+
+.terminal-pane-empty-text {
+  color: var(--text-secondary);
+  font-size: 14px;
+  margin: 0;
+}
+
+.terminal-pane-new-btn {
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-primary);
+  color: var(--text-primary);
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.terminal-pane-new-btn:hover {
+  background: var(--bg-secondary);
+  border-color: var(--accent-primary);
+}
+
+/* Terminal pane content area - holds terminal instances */
+.terminal-pane-content {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Terminal instance wrapper */
+.terminal-instance {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: none;
+  flex-direction: column;
+}
+
+.terminal-instance.active {
+  display: flex;
+}
+
+/* Terminal tab bar at top of each pane */
+.terminal-tab-bar {
+  display: flex;
+  align-items: center;
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border);
+  height: 40px;
+  flex-shrink: 0;
+}
+
+/* Scrollable tabs area */
+.terminal-tabs-scroll {
+  flex: 1;
+  display: flex;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  gap: 2px;
+  padding: 4px;
+}
+
+.terminal-tabs-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+/* Individual terminal tab */
+.terminal-tab {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+  max-width: 140px;
+}
+
+.terminal-tab:active {
+  transform: scale(0.97);
+}
+
+.terminal-tab.active {
+  background: var(--accent-20);
+  border-color: var(--accent);
+}
+
+/* Tab name */
+.terminal-tab-name {
+  font-size: 14px;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.terminal-tab.active .terminal-tab-name {
+  color: var(--text-primary);
+}
+
+/* Tab rename input */
+.terminal-tab-rename-input {
+  font-size: 16px; /* 16px minimum prevents iOS zoom on focus */
+  color: var(--text-primary);
+  background: var(--bg-primary);
+  border: 1px solid var(--accent);
+  border-radius: 4px;
+  padding: 2px 6px;
+  outline: none;
+  width: 100%;
+  max-width: 120px;
+  font-family: inherit;
+  /* Ensure keyboard appears on iOS */
+  -webkit-user-select: text;
+  user-select: text;
+}
+
+.terminal-tab-rename-input:focus {
+  box-shadow: 0 0 0 2px var(--accent-30);
+}
+
+/* Tab close button */
+.terminal-tab-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  background: transparent;
+  border: none;
+  border-radius: 4px;
+  color: var(--text-muted);
+  font-size: 14px;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all 0.15s ease;
+  padding: 0;
+  line-height: 1;
+}
+
+.terminal-tab-close:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-primary);
+}
+
+.terminal-tab-close:active {
+  background: var(--error);
+  color: white;
+}
+
+/* Tab action buttons container */
+.terminal-tab-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  border-left: 1px solid var(--border);
+}
+
+/* Tab action button (new tab, split toggle) */
+.terminal-tab-action-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text-secondary);
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.terminal-tab-action-btn:hover {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+.terminal-tab-action-btn:active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: white;
+  transform: scale(0.95);
+}
+
+.terminal-tab-action-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.terminal-tab-action-btn:disabled:active {
+  transform: none;
+  background: var(--bg-tertiary);
+  border-color: var(--border);
+  color: var(--text-secondary);
+}
+
+/* Split toggle button when active */
+.terminal-tab-action-btn.split-toggle.active {
+  background: var(--accent-20);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* Upload button status feedback */
+.terminal-tab-action-btn.upload-success {
+  background: rgba(34, 197, 94, 0.2);
+  border-color: #22c55e;
+  color: #22c55e;
+}
+
+.terminal-tab-action-btn.upload-error {
+  background: rgba(239, 68, 68, 0.2);
+  border-color: #ef4444;
+  color: #ef4444;
+}
+
+.terminal-tab-action-btn.upload-btn:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+/* Drag feedback styles for tabs */
+.terminal-tab.dragging {
+  opacity: 0.5;
+  background: var(--accent);
+}
+
+.terminal-tab.drag-over {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent-30);
+}
+
+/* Split enabled state adjustments */
+.split-container.split-enabled .terminal-pane {
+  border: 1px solid transparent;
+}
+
+/* Responsive adjustments for split mode */
+@media (max-width: 767px) {
+  .split-container.split-enabled .terminal-pane {
+    min-height: 200px;
+  }
+
+  .terminal-tab {
+    max-width: 100px;
+    padding: 5px 8px;
+  }
+
+  .terminal-tab-name {
+    font-size: 13px;
+  }
+
+  .terminal-tab-close {
+    width: 16px;
+    height: 16px;
+    font-size: 12px;
+  }
+}
+
+@media (min-width: 768px) {
+  .split-container.split-enabled .terminal-pane {
+    min-width: 300px;
+  }
+}
+
+/* ============================================
+   DASHBOARD MODE STYLES
+   ============================================ */
+
+/* Dashboard Layout Container */
+.dashboard-layout {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+}
+
+.dashboard-columns {
+  height: 100%;
+}
+
+/* Dashboard Panels */
+.dashboard-panel {
+  height: 100%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.dashboard-files {
+  border-right: 1px solid var(--border);
+}
+
+.dashboard-terminals {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+.dashboard-terminal-stack {
+  flex: 1;
+  min-height: 0;
+}
+
+/* Dashboard terminal row - simple single pane layout */
+.dashboard-terminal-row {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+
+.dashboard-terminal-row > .terminal-pane {
+  flex: 1;
+  min-height: 0;
+}
+
+/* Placeholder for additional panes */
+.dashboard-terminal-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  background: var(--secondary);
+  border-left: 1px solid var(--border);
+}
+
+.dashboard-terminal-placeholder .placeholder-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+.dashboard-terminal-placeholder .placeholder-hint {
+  font-size: 11px;
+  opacity: 0.7;
+}
+
+.dashboard-memory {
+  border-left: 1px solid var(--border);
+}
+
+/* Collapsed panel states */
+.dashboard-panel.collapsed {
+  min-width: 32px;
+  max-width: 32px;
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+}
+
+.dashboard-files.collapsed {
+  border-right: 1px solid var(--border);
+}
+
+.dashboard-memory.collapsed {
+  border-left: 1px solid var(--border);
+}
+
+/* Panel collapse/expand buttons */
+.panel-collapse-btn,
+.panel-expand-btn {
+  position: absolute;
+  z-index: 10;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  padding: 0;
+}
+
+.panel-collapse-btn:hover,
+.panel-expand-btn:hover {
+  background: var(--bg-tertiary);
+  border-color: var(--border-hover);
+  color: var(--text-primary);
+}
+
+/* Collapse buttons positioning */
+.panel-collapse-btn.files-collapse {
+  top: 8px;
+  right: 8px;
+}
+
+.panel-collapse-btn.memory-collapse {
+  top: 8px;
+  left: 8px;
+}
+
+/* Expand buttons - centered in collapsed panel */
+.panel-expand-btn {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 0;
+  border: none;
+  background: transparent;
+}
+
+.panel-expand-btn:hover {
+  background: var(--bg-tertiary);
+}
+
+/* Dashboard panels need relative positioning for collapse buttons */
+.dashboard-files,
+.dashboard-memory {
+  position: relative;
+}
+
+/* Memory placeholder when disabled */
+.dashboard-memory-placeholder {
+  display: none;
+}
+
+/* Single terminal row layout (when split is disabled) */
+.dashboard-single-terminal {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.dashboard-single-terminal > .dashboard-terminal-row {
+  flex: 1;
+  min-height: 0;
+}
+
+/* Restore split button */
+.restore-split-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 10;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  padding: 0;
+}
+
+.restore-split-btn:hover {
+  background: var(--accent-15);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* ===========================================
+   Dashboard Preview Mode - Single Render Path
+   ===========================================
+   CRITICAL: Component tree NEVER changes.
+   CSS handles ALL visual changes for preview mode.
+   This prevents terminal unmount/remount (PTY destruction).
+   =========================================== */
+
+/* Preview mode close button */
+.preview-mode-close-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 100;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-primary);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  padding: 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.preview-mode-close-btn:hover {
+  background: var(--danger);
+  border-color: var(--danger);
+  color: white;
+}
+
+/* Base preview mode container */
+.dashboard-preview-mode {
+  position: relative;
+  height: 100%;
+  width: 100%;
+}
+
+/* Hide side panels in preview mode AND collapse their flex space completely */
+.dashboard-preview-mode .dashboard-files,
+.dashboard-preview-mode .dashboard-memory,
+.dashboard-preview-mode .dashboard-memory-placeholder {
+  display: none !important;
+  flex: 0 0 0 !important;
+  width: 0 !important;
+  min-width: 0 !important;
+  max-width: 0 !important;
+}
+
+/* Hide all column dividers in preview mode */
+.dashboard-preview-mode .dashboard-columns > .multi-split-divider {
+  display: none !important;
+}
+
+/* Terminals column FILLS entire container (100%) in preview mode */
+/* Preview overlay covers right 67%, so terminal is visually 33% */
+.dashboard-preview-mode .dashboard-terminals {
+  flex: 1 1 100% !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  border-right: none;
+}
+
+/* Hide bottom terminal row in preview mode (but keep it mounted!) */
+.dashboard-preview-mode .dashboard-terminal-stack > .multi-split-panel:last-child {
+  display: none !important;
+}
+
+/* Hide vertical divider between terminal rows in preview mode */
+.dashboard-preview-mode .dashboard-terminal-stack > .multi-split-divider {
+  display: none !important;
+}
+
+/* Top terminal row takes full height in preview mode */
+.dashboard-preview-mode .dashboard-terminal-stack > .multi-split-panel:first-child {
+  flex: 1 !important;
+  height: 100% !important;
+}
+
+/* Single terminal container fills space */
+.dashboard-preview-mode .dashboard-single-terminal {
+  flex: 1;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Terminal row fills its container */
+.dashboard-preview-mode .dashboard-terminal-row {
+  flex: 1;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Terminal pane fills available space */
+.dashboard-preview-mode .terminal-pane {
+  flex: 1;
+  height: 100%;
+}
+
+.dashboard-preview-mode .terminal-pane-content {
+  flex: 1;
+  height: 100%;
+}
+
+/* Preview overlay - positioned absolutely over right 67% */
+.dashboard-preview-overlay {
+  position: absolute;
+  top: 0;
+  left: 33%;
+  width: 67%;
+  height: 100%;
+  background: var(--bg-primary);
+  border-left: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  z-index: 10;
+}
+
+.dashboard-preview-overlay .preview-container {
+  flex: 1;
+  min-height: 0;
+}
+
+/* ===========================================
+   Preview Mode Overlay - Full-screen overlay
+   with replica terminal + preview
+   =========================================== */
+
+.preview-mode-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1000;
+  display: flex;
+  background: var(--bg-primary);
+}
+
+/* Close button */
+.preview-overlay-close-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 1001;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-primary);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  padding: 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.preview-overlay-close-btn:hover {
+  background: var(--danger);
+  border-color: var(--danger);
+  color: white;
+}
+
+/* Desktop app adjustments for preview overlay - account for macOS traffic lights */
+.desktop-app .preview-mode-overlay {
+  top: 32px;
+  height: calc(100% - 32px);
+}
+
+/* Left panel: Replica terminal (33%) */
+.preview-overlay-terminal {
+  flex: 0 0 33%;
+  width: 33%;
+  min-width: 200px;
+  max-width: 33%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid var(--border);
+  background: var(--bg-primary);
+  overflow: hidden;
+}
+
+/* Right panel: Preview iframe (67%) */
+.preview-overlay-content {
+  flex: 1;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-primary);
+}
+
+.preview-overlay-content .preview-container {
+  flex: 1;
+  min-height: 0;
+}
+
+/* Add extra right padding to preview header when in overlay to make room for close button */
+.preview-overlay-content .preview-header {
+  padding-right: 56px; /* 36px close button + 8px margin + 12px spacing */
+}
+
+/* Replica terminal container */
+.replica-terminal-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+}
+
+/* Replica label/badge */
+.replica-terminal-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border);
+  font-size: 12px;
+}
+
+.replica-badge {
+  background: var(--accent);
+  color: white;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 600;
+  font-size: 10px;
+  letter-spacing: 0.5px;
+}
+
+.replica-info {
+  color: var(--text-secondary);
+}
+
+/* Replica terminal content - contains the xterm instance */
+.replica-terminal-content {
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  height: 100%;
+  padding: 8px;
+  box-sizing: border-box;
+}
+
+.replica-terminal-content .xterm {
+  height: 100%;
+  width: 100%;
+}
+
+.replica-terminal-content .xterm-screen {
+  height: 100%;
+  width: 100%;
+}
+
+.replica-terminal-content .xterm-viewport {
+  overflow-y: auto !important;
+}
+
+/* MultiSplitContainer */
+.multi-split-container {
+  display: flex;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+}
+
+.multi-split-container.vertical {
+  flex-direction: column;
+}
+
+.multi-split-container.horizontal {
+  flex-direction: row;
+}
+
+.multi-split-container.is-resizing {
+  user-select: none;
+}
+
+.multi-split-container.is-resizing * {
+  pointer-events: none;
+}
+
+.multi-split-container.is-resizing .multi-split-divider {
+  pointer-events: auto;
+}
+
+.multi-split-panel {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+}
+
+/* Ensure content fills multi-split panels */
+.multi-split-panel > .terminal-pane,
+.multi-split-panel > .dashboard-terminal-row {
+  flex: 1;
+  min-height: 0;
+}
+
+/* Multi-Split Divider */
+.multi-split-divider {
+  position: relative;
+  flex-shrink: 0;
+  background: var(--border);
+  transition: background-color 0.15s ease;
+  z-index: 5;
+}
+
+.multi-split-container.horizontal .multi-split-divider {
+  width: 6px;
+  cursor: col-resize;
+}
+
+.multi-split-container.vertical .multi-split-divider {
+  height: 6px;
+  width: 100%;
+  cursor: row-resize;
+}
+
+/* Extend the hit area for better usability */
+.multi-split-container.horizontal .multi-split-divider::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -4px;
+  right: -4px;
+}
+
+.multi-split-container.vertical .multi-split-divider::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -4px;
+  bottom: -4px;
+}
+
+.multi-split-divider:hover,
+.multi-split-divider.dragging {
+  background: var(--accent);
+}
+
+/* Disabled dividers (when panels are collapsed) */
+.multi-split-divider.disabled {
+  cursor: default;
+  background: transparent;
+  pointer-events: none;
+}
+
+.multi-split-divider.disabled:hover {
+  background: transparent;
+}
+
+/* Dashboard Button */
+.dashboard-button {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text-secondary);
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.dashboard-button:hover {
+  background: var(--bg-tertiary);
+  border-color: var(--border-hover);
+  color: var(--text-primary);
+}
+
+.dashboard-button.active {
+  background: var(--accent-15);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.dashboard-button svg {
+  width: 18px;
+  height: 18px;
+}
+
+.dashboard-button-label {
+  font-weight: 500;
+}
+
+/* Tunnel Status */
+.tunnel-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 10px;
+  font-size: 11px;
+  color: var(--text-secondary);
+  background: var(--bg-tertiary);
+  border-radius: 4px;
+  max-width: 200px;
+}
+
+.tunnel-status-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.tunnel-status-indicator.connected {
+  background: var(--success);
+  box-shadow: 0 0 4px var(--success);
+}
+
+.tunnel-status-indicator.connecting {
+  background: var(--warning);
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+.tunnel-status-indicator.disconnected {
+  background: var(--error);
+}
+
+.tunnel-url {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+}
+
+.tunnel-copy {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  background: transparent;
+  border: none;
+  border-radius: 4px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.tunnel-copy:hover {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+}
+
+.tunnel-copy.copied {
+  color: var(--success);
+}
+
+.tunnel-retry {
+  padding: 4px 8px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--text-secondary);
+  font-size: 10px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.tunnel-retry:hover {
+  background: var(--bg-tertiary);
+  border-color: var(--border-hover);
+}
+
+/* QR Code Button */
+.tunnel-qr-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  background: transparent;
+  border: none;
+  border-radius: 4px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.tunnel-qr-btn:hover {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+}
+
+/* Tunnel Control Buttons - Theme-aware silhouette buttons */
+.tunnel-control-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  background: transparent;
+  border: none;
+  border-radius: 4px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+}
+
+.tunnel-control-btn:hover {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+}
+
+.tunnel-control-btn:active {
+  transform: scale(0.95);
+}
+
+.tunnel-control-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.tunnel-control-btn svg {
+  width: 16px;
+  height: 16px;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* Refresh Button */
+.tunnel-refresh-btn {
+  composes: tunnel-control-btn;
+}
+
+.tunnel-refresh-btn:hover {
+  color: var(--accent);
+}
+
+.tunnel-refresh-btn.refreshing {
+  animation: rotate 1s linear infinite;
+  color: var(--accent);
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Play/Stop Button */
+.tunnel-play-stop-btn {
+  composes: tunnel-control-btn;
+}
+
+.tunnel-play-stop-btn.playing {
+  color: var(--success);
+}
+
+.tunnel-play-stop-btn.playing:hover {
+  color: var(--error);
+}
+
+.tunnel-play-stop-btn.stopped {
+  color: var(--text-secondary);
+}
+
+.tunnel-play-stop-btn.stopped:hover {
+  color: var(--success);
+}
+
+/* Tunnel Stop Confirmation Modal */
+.tunnel-stop-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10001;
+  backdrop-filter: blur(4px);
+}
+
+.tunnel-stop-modal {
+  position: relative;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 24px;
+  max-width: 400px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  animation: modal-appear 0.2s ease;
+}
+
+.tunnel-stop-modal-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 12px;
+}
+
+.tunnel-stop-modal-message {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin-bottom: 20px;
+}
+
+.tunnel-stop-modal-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+.tunnel-stop-modal-btn {
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  border: none;
+}
+
+.tunnel-stop-modal-btn-cancel {
+  background: var(--bg-tertiary);
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
+}
+
+.tunnel-stop-modal-btn-cancel:hover {
+  background: var(--bg-primary);
+  border-color: var(--border-hover);
+}
+
+.tunnel-stop-modal-btn-confirm {
+  background: var(--error);
+  color: white;
+}
+
+.tunnel-stop-modal-btn-confirm:hover {
+  background: #d32f2f;
+}
+
+/* QR Code Modal */
+.qr-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10001;
+  backdrop-filter: blur(4px);
+}
+
+.qr-modal {
+  position: relative;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  animation: modal-appear 0.2s ease;
+}
+
+@keyframes modal-appear {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.qr-modal-close {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  border-radius: 4px;
+  color: var(--text-secondary);
+  font-size: 20px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.qr-modal-close:hover {
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+}
+
+.qr-modal-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  color: var(--text-primary);
+}
+
+.qr-modal-content svg {
+  border-radius: 8px;
+}
+
+.qr-modal-url {
+  font-size: 12px;
+  color: var(--text-secondary);
+  word-break: break-all;
+  text-align: center;
+  max-width: 220px;
+}
+
+/* TabBar with Dashboard */
+.tab-bar.with-dashboard {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+}
+
+.tab-bar-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.tab-bar-tabs {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex: 1;
+  justify-content: center;
+}
+
+.tab-bar-tabs.hidden {
+  display: none;
+}
+
+.tab-bar-right {
+  display: flex;
+  align-items: center;
+}
+
+.tab-bar-item.settings-only {
+  padding: 8px;
+}
+
+.tab-bar-item.settings-only span:last-child {
+  display: none;
+}
+
+/* Dashboard mode footer layout */
+.tab-bar.dashboard-mode {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  padding: 8px 16px;
+}
+
+.tab-bar.dashboard-mode .tab-bar-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tab-bar.dashboard-mode .tab-bar-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+}
+
+.tab-bar.dashboard-mode .tab-bar-right {
+  min-width: 80px; /* Balance with left side */
+}
+
+.tab-bar-item.settings-btn {
+  flex: none;
+  padding: 8px;
+  min-width: auto;
+}
+
+.tab-bar-item.settings-btn span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Preview Play/Stop Buttons */
+.preview-play-button-container,
+.preview-stop-button-container {
+  position: relative;
+}
+
+.preview-play-button,
+.preview-stop-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 6px 10px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.preview-play-button {
+  background: var(--success);
+  color: white;
+}
+
+.preview-play-button:hover {
+  background: var(--success-hover, #22c55e);
+  transform: scale(1.02);
+}
+
+.preview-play-button.active {
+  background: var(--accent);
+}
+
+.preview-stop-button {
+  background: var(--danger);
+  color: white;
+}
+
+.preview-stop-button:hover {
+  background: var(--danger-hover, #ef4444);
+  transform: scale(1.02);
+}
+
+.preview-stop-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.preview-count {
+  background: rgba(255, 255, 255, 0.25);
+  padding: 1px 5px;
+  border-radius: 10px;
+  font-size: 10px;
+  min-width: 14px;
+  text-align: center;
+}
+
+/* Preview Dropdown */
+.preview-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: 4px;
+  min-width: 150px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  overflow: hidden;
+}
+
+.preview-dropdown-header {
+  padding: 8px 12px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-muted);
+  background: var(--bg-tertiary);
+  border-bottom: 1px solid var(--border);
+}
+
+.preview-dropdown-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 10px 12px;
+  border: none;
+  background: transparent;
+  color: var(--text-primary);
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.1s ease;
+}
+
+.preview-dropdown-item:hover {
+  background: var(--bg-hover);
+}
+
+.preview-dropdown-item.current {
+  background: var(--bg-active);
+}
+
+.preview-dropdown-item.stop-item:hover {
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--danger);
+}
+
+.preview-dropdown-item:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.preview-port {
+  font-family: 'SF Mono', 'Menlo', monospace;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.current-badge {
+  font-size: 10px;
+  padding: 2px 6px;
+  background: var(--accent);
+  color: white;
+  border-radius: 4px;
+}
+
+.stopping-badge {
+  font-size: 10px;
+  padding: 2px 6px;
+  background: var(--warning);
+  color: var(--warning-text, #000);
+  border-radius: 4px;
+}
+
+/* Dashboard Settings Overlay */
+.dashboard-settings-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+.dashboard-settings-modal {
+  position: relative;
+  width: 90%;
+  max-width: 500px;
+  max-height: 80vh;
+  background: var(--bg-primary);
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  display: flex;
+  flex-direction: column;
+}
+
+.dashboard-settings-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text-secondary);
+  font-size: 20px;
+  cursor: pointer;
+  z-index: 1;
+  transition: all 0.15s ease;
+}
+
+.dashboard-settings-close:hover {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+}
+
+.dashboard-settings-modal .settings {
+  padding: 20px;
+  padding-top: 60px;
+  overflow-y: auto;
+}
+
+/* App in dashboard mode */
+.app.dashboard-mode .main-content {
+  height: 100%;
+}
+
+/* Ensure terminal panes fill dashboard panels */
+.dashboard-panel .terminal-pane {
+  height: 100%;
+  border: none;
+}
+
+/* Dashboard panel file browser adjustments */
+.dashboard-files .file-browser {
+  height: 100%;
+}
+
+/* Dashboard panel memory viewer adjustments */
+.dashboard-memory .memory-viewer-container {
+  height: 100%;
+}
+
+.dashboard-memory iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+/* ============================================
+   RESPONSIVE DASHBOARD - NARROW SCREENS
+   ============================================ */
+
+/* When dashboard is enabled but screen is narrow, stack panels vertically */
+@media (max-width: 767px) {
+  .dashboard-layout {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+
+  .dashboard-columns {
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+  }
+
+  /* Stack files, terminals, memory vertically */
+  .dashboard-files,
+  .dashboard-terminals,
+  .dashboard-memory {
+    width: 100% !important;
+    min-width: unset !important;
+    max-width: unset !important;
+  }
+
+  /* Files panel at top - reduced height */
+  .dashboard-files {
+    height: 25%;
+    min-height: 100px;
+    max-height: 200px;
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .dashboard-files.collapsed {
+    height: auto;
+    min-height: unset;
+    max-height: unset;
+  }
+
+  /* Terminals in middle - take remaining space */
+  .dashboard-terminals {
+    flex: 1;
+    min-height: 200px;
+  }
+
+  /* Memory panel at bottom - reduced height */
+  .dashboard-memory {
+    height: 25%;
+    min-height: 100px;
+    max-height: 200px;
+    border-left: none;
+    border-top: 1px solid var(--border);
+  }
+
+  .dashboard-memory.collapsed {
+    height: auto;
+    min-height: unset;
+    max-height: unset;
+  }
+
+  /* Hide resizers in narrow mode */
+  .dashboard-columns .resize-handle {
+    display: none;
+  }
+}
+
+/* ============================================
+   MOBILE KEYBOARD VISIBILITY STYLES
+   ============================================ */
+
+/* CSS variable for keyboard height (set by JS) */
+:root {
+  --keyboard-height: 0px;
+}
+
+/* Hide tab bar when keyboard is visible - maximize terminal space */
+body.keyboard-visible .tab-bar {
+  display: none !important;
+}
+
+/* Adjust app layout when keyboard visible */
+body.keyboard-visible .app {
+  /* Ensure full height without tab bar */
+  padding-bottom: 0;
+}
+
+body.keyboard-visible .main-content {
+  height: 100%;
+}
+
+/* Mobile keybar wrapper - handles keyboard positioning */
+.mobile-keybar-wrapper {
+  /* Normal flow when keyboard hidden */
+}
+
+.mobile-keybar-wrapper.keyboard-visible {
+  /* Fixed positioning when keyboard visible (set by JS inline styles) */
+  background: var(--bg-secondary);
+  border-top: 1px solid var(--border);
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Terminal instance keyboard adjustments */
+.terminal-instance.keyboard-active {
+  /* Padding bottom is set by JS based on keyboard height */
+}
+
+.terminal-instance.keyboard-active .terminal-container {
+  /* Ensure terminal fits in available space */
+  flex: 1;
+  min-height: 0;
+}
+
+/* Prevent iOS auto-linking on terminal URLs */
+.terminal-container .xterm {
+  -webkit-text-size-adjust: none;
+}
+
+/* Ensure link clicks work on mobile */
+.terminal-container .xterm a,
+.terminal-container .xterm .xterm-link-layer span[style*="cursor: pointer"] {
+  pointer-events: auto !important;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* ============================================
+   UPDATE MODAL STYLES
+   ============================================ */
+
+.update-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  padding: 20px;
+  backdrop-filter: blur(4px);
+}
+
+.update-modal {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  width: 100%;
+  max-width: 400px;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+}
+
+.update-modal-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24px 24px 16px;
+  text-align: center;
+}
+
+.update-modal-icon {
+  width: 56px;
+  height: 56px;
+  background: var(--accent-15);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12px;
+  color: var(--accent);
+}
+
+.update-modal-header h2 {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.update-modal-content {
+  padding: 0 24px 24px;
+}
+
+.update-version-info {
+  background: var(--bg-tertiary);
+  border-radius: 10px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.update-version-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 0;
+}
+
+.update-version-row:first-child {
+  padding-top: 0;
+}
+
+.update-version-row:last-child {
+  padding-bottom: 0;
+}
+
+.update-version-label {
+  color: var(--text-muted);
+  font-size: 14px;
+}
+
+.update-version-value {
+  color: var(--text-primary);
+  font-size: 14px;
+  font-family: var(--font-mono);
+}
+
+.update-version-new {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.update-release-notes {
+  margin-top: 16px;
+}
+
+.update-release-notes h3 {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  margin: 0 0 8px;
+}
+
+.update-release-notes-content {
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  max-height: 150px;
+  overflow-y: auto;
+  padding: 12px;
+  background: var(--bg-tertiary);
+  border-radius: 8px;
+  white-space: pre-wrap;
+}
+
+.update-progress {
+  margin-top: 16px;
+}
+
+.update-progress-bar {
+  height: 6px;
+  background: var(--bg-tertiary);
+  border-radius: 3px;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+
+.update-progress-fill {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+.update-progress-text {
+  font-size: 13px;
+  color: var(--text-muted);
+  text-align: center;
+  display: block;
+}
+
+.update-modal-actions {
+  display: flex;
+  gap: 12px;
+  padding: 16px 24px 24px;
+  border-top: 1px solid var(--border);
+}
+
+.update-btn {
+  flex: 1;
+  padding: 14px 20px;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: none;
+}
+
+.update-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.update-btn-secondary {
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+}
+
+.update-btn-secondary:hover:not(:disabled) {
+  background: var(--bg-primary);
+}
+
+.update-btn-primary {
+  background: var(--accent);
+  color: var(--text-on-accent, #fff);
+}
+
+.update-btn-primary:hover:not(:disabled) {
+  opacity: 0.9;
+}
+
+/* Settings update status messages */
+.settings-success {
+  color: var(--terminal-green, #4ade80);
+}
+
+.settings-update-available {
+  color: var(--accent);
+  font-weight: 500;
+}
+
+.settings-error {
+  color: var(--terminal-red, #f87171);
+}
+
+.settings-muted {
+  color: var(--text-muted);
+}
+
+/* License input field */
+.settings-input {
+  width: 100%;
+  padding: 12px 16px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text-primary);
+  font-size: 15px;
+  transition: border-color 0.2s, background-color 0.2s;
+}
+
+.settings-input::placeholder {
+  color: var(--text-muted);
+}
+
+.settings-input:focus {
+  outline: none;
+  border-color: var(--accent);
+  background: var(--bg-secondary);
+}
+
+/* Secondary button style (for deactivate, etc.) */
+.settings-btn-secondary {
+  padding: 12px 24px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.settings-btn-secondary:hover {
+  background: var(--bg-tertiary);
+  border-color: var(--border-hover);
+  color: var(--text-primary);
+}
+
+/* Accent button style (for Get Pro CTA) */
+.settings-btn-accent {
+  padding: 12px 24px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #fff;
+  background: var(--accent);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.settings-btn-accent:hover {
+  background: var(--accent-hover);
+}
+
+.settings-btn-danger {
+  padding: 12px 24px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #fff;
+  background: #ef4444;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.settings-btn-danger:hover {
+  background: #dc2626;
+}
+
+/* Code block for settings (e.g., Claude Code hook config) */
+.settings-code {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px;
+  font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--text);
+  overflow-x: auto;
+  white-space: pre;
+  margin-top: 8px;
+}
+
+/* Permission Request UI */
+.permission-request-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--bg-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  padding: 24px;
+}
+
+.permission-request-card {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 32px;
+  text-align: center;
+  max-width: 420px;
+  width: 100%;
+  animation: permissionFadeIn 0.3s ease-out;
+}
+
+@keyframes permissionFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.permission-icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+}
+
+.permission-title {
+  color: var(--text-primary);
+  font-size: 24px;
+  font-weight: 600;
+  margin: 0 0 12px 0;
+}
+
+.permission-message {
+  color: var(--text-secondary);
+  font-size: 16px;
+  line-height: 1.6;
+  margin: 0 0 24px 0;
+}
+
+.grant-access-button {
+  background: var(--accent);
+  color: white;
+  border: none;
+  padding: 16px 32px;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  width: 100%;
+}
+
+.grant-access-button:hover {
+  background: var(--accent-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}

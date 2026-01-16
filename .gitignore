@@ -1,0 +1,41 @@
+# Dependencies
+node_modules/
+server/node_modules/
+
+# Build outputs
+dist/
+dist-ssr/
+*.local
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+pty-sidecar.log
+
+# OS files
+.DS_Store
+*.swp
+*.swo
+*~
+
+# IDE
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.sublime-workspace
+
+# Environment
+.env
+.env*.local
+
+# Claude Code internal
+.claude/
+
+# Tauri
+src-tauri/target/
+src-tauri/client/
+src-tauri/WixTools/
