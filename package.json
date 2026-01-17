@@ -4,6 +4,10 @@
   "type": "module",
   "scripts": {
     "ensure-node": "node scripts/download-node.js",
+    "rebuild:node-pty": "node scripts/rebuild-node-pty.cjs",
+    "prepare:tauri": "npm run bundle:node",
+    "validate": "node scripts/validate-setup.js",
+    "postinstall": "node scripts/validate-setup.js || true",
     "dev": "npm run ensure-node && concurrently \"npm run dev:server\" \"npm run dev:client\"",
     "dev:server": "npm run ensure-node && node scripts/run-dev-server.js",
     "dev:client": "npm run ensure-node && node scripts/run-dev-client.js",
@@ -21,7 +25,7 @@
     "start": "node dist/server/index.js",
     "preview": "vite preview",
     "tauri": "tauri",
-    "tauri:dev": "tauri dev",
+    "tauri:dev": "npm run prepare:tauri && tauri dev",
     "tauri:build": "npm run bundle:all && tauri build"
   },
   "dependencies": {

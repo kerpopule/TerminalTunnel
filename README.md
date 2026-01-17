@@ -42,9 +42,17 @@ A modern, web-based terminal emulator that lets you access your terminal from an
 
 ## Installation
 
-### Prerequisites
-- Node.js 18+ and npm
-- Git
+### Prerequisites Check
+
+Before installation, ensure you have:
+- ✅ Node.js 18 or higher (`node --version`)
+- ✅ npm 8 or higher (`npm --version`)
+- ✅ Git (`git --version`)
+- ✅ Internet connection (for downloading dependencies)
+- ✅ ~500MB free disk space
+
+For desktop app:
+- ✅ Rust 1.70+ (`rustc --version`) - Install from [rustup.rs](https://rustup.rs)
 
 ### Web Application Setup
 
@@ -59,23 +67,32 @@ A modern, web-based terminal emulator that lets you access your terminal from an
    npm install
    ```
 
-3. **Build the application**
+3. **Verify dependencies installation**
+   ```bash
+   npm run validate
+   ```
+
+   If you see errors:
+   - **Module not found errors**: Run `rm -rf node_modules package-lock.json && npm install`
+   - **Permission errors**: Check you have write access to the directory
+
+4. **Build the application**
    ```bash
    npm run build
    ```
 
-4. **Start the server**
+5. **Start the server**
    ```bash
    npm start
    ```
 
-5. **Access the application**
+6. **Access the application**
    - Open your browser to `http://localhost:3001`
    - Default port is 3001 (configurable in server/index.ts)
 
 ### Desktop Application Setup
 
-1. **Complete web application setup first** (steps 1-2 above)
+1. **Complete web application setup first** (steps 1-3 above)
 
 2. **Install Rust** (required for Tauri)
    - Visit [rustup.rs](https://rustup.rs/) and follow instructions
@@ -186,6 +203,26 @@ Terminal Tunnel/
 - **Port Proxying**: Cloudflare tunnel provides secure access
 
 ## Troubleshooting
+
+### Fresh Install Issues
+
+**Node modules corruption**
+- **Symptoms**: `Cannot find module './main'`, `MODULE_NOT_FOUND` errors
+- **Solution**: Clean reinstall dependencies
+  ```bash
+  rm -rf node_modules package-lock.json
+  npm install
+  ```
+
+**Build fails with TypeScript errors**
+- **Symptoms**: `error TS1470: import.meta not allowed`, `exports is not defined`
+- **Solution**: Verify `tsconfig.server.json` has `"module": "ESNext"`
+- If issue persists, ensure `package.json` has `"type": "module"`
+
+**Cloudflared download fails**
+- **Symptoms**: `Failed to download: 404 Not Found`
+- **Solution**: This is usually transient. Run `npm run bundle:cloudflared` again
+- If persistent, check GitHub releases page is accessible
 
 ### Build Issues
 - **Node version**: Ensure Node.js 18+ is installed

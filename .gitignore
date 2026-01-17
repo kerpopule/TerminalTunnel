@@ -39,3 +39,7 @@ pty-sidecar.log
 src-tauri/target/
 src-tauri/client/
 src-tauri/WixTools/
+
+# Bundled binaries (downloaded dynamically)
+src-tauri/bin/node
+src-tauri/bin/cloudflared

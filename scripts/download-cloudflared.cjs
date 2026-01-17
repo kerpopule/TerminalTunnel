@@ -25,11 +25,11 @@ function getPlatform() {
 
 async function download() {
   const platform = getPlatform();
-  const url = `https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-${platform}`;
-  
+
   if (platform.includes('windows')) {
+    const url = `https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-windows-amd64.exe`;
     const dest = path.join(BIN_DIR, 'cloudflared.exe');
-     if (fs.existsSync(dest)) {
+    if (fs.existsSync(dest)) {
       console.log('cloudflared.exe already exists. Skipping download.');
       return;
     }
@@ -37,23 +37,48 @@ async function download() {
     await downloadFile(url, dest);
     return;
   }
-  
+
   if (fs.existsSync(BIN_PATH)) {
     console.log('cloudflared binary already exists. Skipping download.');
     return;
   }
-  
+
+  // Unix-like systems (macOS, Linux) use tarballs
+  const url = `https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-${platform}.tgz`;
+  const tgzPath = path.join(BIN_DIR, 'cloudflared.tgz');
+
   console.log(`Downloading cloudflared for ${platform} from ${url}...`);
   if (!fs.existsSync(BIN_DIR)) {
     fs.mkdirSync(BIN_DIR, { recursive: true });
   }
 
-  await downloadFile(url, BIN_PATH);
+  await downloadFile(url, tgzPath);
+
+  // Extract tarball
+  console.log('Extracting cloudflared...');
+  const tar = require('tar');
+  await tar.x({
+    file: tgzPath,
+    cwd: BIN_DIR,
+    strict: true
+  });
+
+  // Remove tarball
+  fs.unlinkSync(tgzPath);
+
+  // Rename extracted binary to cloudflared (it may be extracted as cloudflared-<version>)
+  const extractedFiles = fs.readdirSync(BIN_DIR).filter(f => f.startsWith('cloudflared') && !f.endsWith('.tgz'));
+  if (extractedFiles.length > 0 && extractedFiles[0] !== 'cloudflared') {
+    fs.renameSync(
+      path.join(BIN_DIR, extractedFiles[0]),
+      BIN_PATH
+    );
+  }
 
   // Make it executable
   fs.chmodSync(BIN_PATH, '755');
 
-  console.log(`cloudflared binary downloaded to ${BIN_PATH}`);
+  console.log(`cloudflared binary downloaded and extracted to ${BIN_PATH}`);
 }
 
 function downloadFile(url, dest) {

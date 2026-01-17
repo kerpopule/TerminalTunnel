@@ -2,21 +2,21 @@
 
 /**
  * Downloads Node.js binary for bundling with the Tauri app.
- * Supports macOS arm64 and x64 architectures.
+ * Automatically detects and uses the current system Node.js version
+ * so that native modules (like node-pty) work without rebuilding.
  */
 
-import { createWriteStream, existsSync, mkdirSync, chmodSync } from 'fs';
+import { createWriteStream, existsSync, mkdirSync, chmodSync, unlinkSync, rmSync, renameSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
-import { pipeline } from 'stream/promises';
-import { createGunzip } from 'zlib';
-import { extract } from 'tar';
+import { execSync } from 'child_process';
 import https from 'https';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-// Node.js version to bundle
-const NODE_VERSION = '20.19.0';
+// Detect system Node.js version (without 'v' prefix)
+const NODE_VERSION = process.version.slice(1);
+console.log(`Detected system Node.js version: v${NODE_VERSION}`);
 
 // Detect architecture
 const arch = process.arch === 'arm64' ? 'arm64' : 'x64';
@@ -75,7 +75,6 @@ async function downloadFile(url, dest) {
 async function extractNode() {
   console.log('Extracting Node.js binary...');
 
-  const { createReadStream } = await import('fs');
   const tar = await import('tar');
 
   // Extract the tar.gz
@@ -92,7 +91,6 @@ async function extractNode() {
   // The binary will be at outputDir/bin/node, move it to outputDir/node
   const extractedBin = join(outputDir, 'bin', 'node');
   if (existsSync(extractedBin)) {
-    const { renameSync, rmSync } = await import('fs');
     renameSync(extractedBin, nodeBinaryPath);
     // Clean up the bin directory
     rmSync(join(outputDir, 'bin'), { recursive: true, force: true });
@@ -102,31 +100,49 @@ async function extractNode() {
   chmodSync(nodeBinaryPath, 0o755);
 
   // Clean up tar file
-  const { unlinkSync } = await import('fs');
   unlinkSync(tarPath);
 
   console.log(`Node.js binary extracted to: ${nodeBinaryPath}`);
 }
 
+function getBundledNodeVersion() {
+  if (!existsSync(nodeBinaryPath)) {
+    return null;
+  }
+  try {
+    const version = execSync(`"${nodeBinaryPath}" --version`, { encoding: 'utf-8' }).trim();
+    return version.slice(1); // Remove 'v' prefix
+  } catch {
+    return null;
+  }
+}
+
 async function main() {
-  console.log(`\n=== Downloading Node.js v${NODE_VERSION} for ${platform}-${arch} ===\n`);
+  console.log(`\n=== Bundling Node.js v${NODE_VERSION} for ${platform}-${arch} ===\n`);
 
   // Ensure output directory exists
   if (!existsSync(outputDir)) {
     mkdirSync(outputDir, { recursive: true });
   }
 
-  // Check if node binary already exists
-  if (existsSync(nodeBinaryPath)) {
-    console.log('Node.js binary already exists. Skipping download.');
-    console.log(`Location: ${nodeBinaryPath}`);
-    return;
+  // Check if node binary already exists with correct version
+  const bundledVersion = getBundledNodeVersion();
+  if (bundledVersion) {
+    if (bundledVersion === NODE_VERSION) {
+      console.log(`Node.js v${bundledVersion} already bundled. Skipping download.`);
+      console.log(`Location: ${nodeBinaryPath}`);
+      return;
+    } else {
+      console.log(`Bundled Node.js v${bundledVersion} differs from system v${NODE_VERSION}.`);
+      console.log('Removing old binary and downloading matching version...');
+      unlinkSync(nodeBinaryPath);
+    }
   }
 
   try {
     await downloadFile(downloadUrl, tarPath);
     await extractNode();
-    console.log('\n=== Node.js download complete ===\n');
+    console.log(`\n=== Node.js v${NODE_VERSION} bundled successfully ===\n`);
   } catch (error) {
     console.error('Error:', error.message);
     process.exit(1);
